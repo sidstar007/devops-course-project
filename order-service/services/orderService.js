@@ -1,13 +1,9 @@
-// order-service/src/services/orderService.js
-
 const Order = require('../models/orderModel');
 const eventPublisher = require('../events/eventPublisher');
 
 exports.createOrder = async (orderData) => {
-  // orderData should include userId, items, shippingAddress
   const { userId, items, shippingAddress } = orderData;
 
-  // Calculate total amount
   const totalAmount = items.reduce((total, item) => total + item.price * item.quantity, 0);
 
   const newOrder = new Order({
@@ -19,7 +15,6 @@ exports.createOrder = async (orderData) => {
 
   await newOrder.save();
 
-  // Emit "Order Placed" event
   eventPublisher.publish('order.placed', {
     orderId: newOrder._id,
     userId: newOrder.userId,

@@ -1,5 +1,3 @@
-// order-service/src/models/orderModel.js
-
 const mongoose = require('mongoose');
 
 const orderItemSchema = new mongoose.Schema({
@@ -40,7 +38,6 @@ const orderSchema = new mongoose.Schema(
       postalCode: String,
       country: String,
     },
-    // Additional fields as needed
   },
   { timestamps: true }
 );

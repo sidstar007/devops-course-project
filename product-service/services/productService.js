@@ -1,5 +1,3 @@
-
-
 const Product = require('../models/productModel');
 const eventPublisher = require('../events/eventPublisher');
 
@@ -28,7 +26,6 @@ exports.updateProduct = async (productId, updateData) => {
     throw new Error('Product not found');
   }
 
-  // Emit "Product Updated" event
   eventPublisher.publish('product.updated', {
     productId: updatedProduct._id,
     name: updatedProduct.name,
@@ -45,7 +42,6 @@ exports.deleteProduct = async (productId) => {
     throw new Error('Product not found');
   }
 
-  // Emit "Product Deleted" event
   eventPublisher.publish('product.deleted', {
     productId: deletedProduct._id,
   });
@@ -66,16 +62,15 @@ exports.getAllProducts = async () => {
 };
 
 exports.updateInventory = async (productId, quantityChange) => {
-  console.log('Product ID:', productId);  // Add this line to check the productId
+  console.log('Product ID:', productId);
   const product = await Product.findById(productId);
-  console.log('Found product:', product);  // Add this line to check if the product is found
+  console.log('Found product:', product);
   if (!product) {
     throw new Error('Product not found');
   }
   product.quantity += quantityChange;
   await product.save();
 
-  // Emit "Inventory Updated" event
   eventPublisher.publish('inventory.updated', {
     productId: product._id,
     quantity: product.quantity,
