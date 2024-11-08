@@ -1,0 +1,71 @@
+version: '3'
+services:
+  user-service:
+    build: ./userService  # Fix this line to match the actual folder name
+    ports:
+      - '3005:3005'
+    environment:
+      - PORT=3005
+      - MONGODB_URI=mongodb://mongodb:27017/userdb
+      - JWT_SECRET=your_jwt_secret
+      - RABBITMQ_URL=amqp://rabbitmq
+    depends_on:
+      - mongodb
+      - rabbitmq
+
+  product-service:
+    build: ./product-service
+    ports:
+      - '3006:3006'
+    environment:
+      - PORT=3006
+      - MONGODB_URI=mongodb://mongodb:27017/productdb
+      - JWT_SECRET=your_jwt_secret
+      - RABBITMQ_URL=amqp://rabbitmq
+    depends_on:
+      - mongodb
+      - rabbitmq
+
+  order-service:
+    build: ./order-service
+    ports:
+      - '3002:3002'
+    environment:
+      - PORT=3002
+      - MONGODB_URI=mongodb://mongodb:27017/orderdb
+      - JWT_SECRET=your_jwt_secret
+      - RABBITMQ_URL=amqp://rabbitmq
+    depends_on:
+      - mongodb
+      - rabbitmq
+
+  graphql-gateway:
+    build: .
+    ports:
+      - '4000:4000'
+    environment:
+      - USER_SERVICE_URL=http://user-service:3005/api/users
+      - PRODUCT_SERVICE_URL=http://product-service:3006/api/products
+      - ORDER_SERVICE_URL=http://order-service:3002/api/orders
+      - JWT_SECRET=your_jwt_secret
+    depends_on:
+      - user-service
+      - product-service
+      - order-service
+
+  mongodb:
+    image: mongo
+    ports:
+      - '27017:27017'
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=example
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - '5672:5672'  # RabbitMQ server port
+      - '15672:15672'  # RabbitMQ management UI
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest

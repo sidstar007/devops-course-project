@@ -1,0 +1,26 @@
+version: '3'
+services:
+  user-service:
+    build: .
+    ports:
+      - '3002:3002'
+    environment:
+      - RABBITMQ_URL=amqp://rabbitmq:5672
+      - MONGODB_URI=mongodb://mongodb:27017/userdb
+    depends_on:
+      - rabbitmq
+      - mongodb
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - '5672:5672'    # RabbitMQ server port
+      - '15672:15672'  # RabbitMQ management UI
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+
+  mongodb:
+    image: mongo
+    ports:
+      - '27017:27017'
